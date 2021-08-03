@@ -44,7 +44,7 @@ FeaturePlotCustom <- function(seurat, genes, plot = T, tag = element_blank(), pl
     p <- unlist(p, recursive = F)
   }
   if(plot == T){
-    if(is.null(ncol) & is.null(nrow)){
+    if(is.null(ncol) & is.null(nrow) & !is.null(split.by)){
       ncol = length(splits)
     }
     if(plotLegend == F){
