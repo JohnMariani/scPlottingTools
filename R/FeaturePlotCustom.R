@@ -2,7 +2,6 @@
 FeaturePlotCustom <- function(seurat, genes, plot = T, tag = element_blank(), plotLegend = T, cellNum = T, pt.size = .25, labelFont = 6, titleFont = 8, sharedScale = "All", nrow = NULL, ncol = NULL, split.by = NULL, sideBySide = T, color0 = "grey60", colPalette = c("dodgerblue2", "gold", "red2")){
   embeddings <- as.data.frame(seurat@reductions$umap@cell.embeddings)
   expr <- seurat@assays$RNA@data[genes,, drop = F]
-  scatter_col = c("grey60",colorRampPalette(c("dodgerblue2", "gold", "red2"))(max(expr)*100))
   if(is.null(split.by)){
     p <- lapply(genes, function(x) {ggplot2::ggplot(data=embeddings[match(names(sort(expr[x,], decreasing = F)), row.names(embeddings)),], aes(x=UMAP_1, y=UMAP_2)) + ggplot2::geom_point(aes(color= sort(expr[x,], decreasing = F)), size = pt.size) +
         ggplot2::labs(col="Expression", title = x) + ggplot2::theme_classic() +
