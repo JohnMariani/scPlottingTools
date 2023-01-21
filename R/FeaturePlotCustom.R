@@ -15,7 +15,11 @@ FeaturePlotCustom <- function(seurat, genes, plot = T, tag = element_blank(), pl
     xLimits <- c(min(embeddings$UMAP_1), max(embeddings$UMAP_1))
     yLimits <- c(min(embeddings$UMAP_2), max(embeddings$UMAP_2))
     splitDF <- seurat@meta.data[drop = F,,split.by]
-    splits <- unique(splitDF[,1])
+    if(is.factor(splitDF[,1])) {
+      splits <- levels(splitDF[,1])
+    } else {
+      splits <- unique(splitDF[,1])
+    }
     q <- lapply(splits, function(y) {
       lapply(genes, function(x) {
         ggplot2::ggplot(data=embeddings[match(names(sort(expr[x,colnames(expr) %in% row.names(splitDF[splitDF[,split.by] %in% y,, drop = F])], decreasing = F)), row.names(embeddings)),], aes(x=UMAP_1, y=UMAP_2)) + ggplot2::geom_point(aes(color= sort(expr[x,colnames(expr) %in% row.names(splitDF[splitDF[,split.by] %in% y,, drop = F])], decreasing = F)), size = pt.size) +
