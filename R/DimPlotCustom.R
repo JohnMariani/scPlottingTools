@@ -1,5 +1,5 @@
 #' @export
-DimPlotCustom <- function(seurat, group.by = "orig.ident", pt.size = 1, plotLegend = T, labelFont = 6, titleFont = 8, nrow = NULL, ncol = NULL, split.by = NULL, plot = T){
+DimPlotCustom <- function(seurat, group.by = "orig.ident", pt.size = 1, plotLegend = T, labelFont = 6, titleFont = 8, nrow = NULL, ncol = NULL, split.by = NULL, plot = T, label = F){
   embeddings <- as.data.frame(seurat@reductions$umap@cell.embeddings)
   xLimits <- c(min(embeddings$UMAP_1), max(embeddings$UMAP_1))
   yLimits <- c(min(embeddings$UMAP_2), max(embeddings$UMAP_2))
@@ -21,6 +21,18 @@ DimPlotCustom <- function(seurat, group.by = "orig.ident", pt.size = 1, plotLege
         ggplot2::xlim(xLimits) + ggplot2::ylim(yLimits) + ggplot2::ylab("UMAP 2") + ggplot2::xlab("UMAP 1") + ggplot2::theme(plot.tag = element_text(size = 12), legend.position = "bottom", legend.direction = "horizontal", text = element_text(size = labelFont), legend.text = element_text(size = 6), plot.margin = unit(c(0,0,0,0), "cm"), plot.title = element_text(hjust = 0.5, size = titleFont)) + ggplot2::ggtitle(y) 
     })
   }
+  if(label ==T){
+    if(is.null(split.by)){
+      centroids <- aggregate(cbind(UMAP_1,UMAP_2) ~ group, data = embeddings, FUN=mean)
+      p <- p + geom_text(data = centroids, mapping = aes(x=UMAP_1, y=UMAP_2, label=group))
+    } else {
+      embeddings$split <- seurat@meta.data[, split.by]
+      centroids <- aggregate(cbind(UMAP_1,UMAP_2) ~ group + split, data= embeddings, FUN=mean)
+      for(i in 1:length(splits)){
+        p[[i]] <- p[[i]] + geom_text(data = centroids[centroids$split == splits[i],], mapping = aes(x=UMAP_1, y=UMAP_2, label=group))
+      }
+    }
+  }
   if(plot == T){
     if(is.null(ncol) & is.null(nrow) & !is.null(split.by)){
       ncol = length(splits)
@@ -34,4 +46,5 @@ DimPlotCustom <- function(seurat, group.by = "orig.ident", pt.size = 1, plotLege
     return(p)
   }
 }
+
 
