@@ -24,12 +24,12 @@ DimPlotCustom <- function(seurat, group.by = "orig.ident", pt.size = 1, plotLege
   if(label ==T){
     if(is.null(split.by)){
       centroids <- aggregate(cbind(UMAP_1,UMAP_2) ~ group, data = embeddings, FUN=mean)
-      p <- p + geom_text(data = centroids, mapping = aes(x=UMAP_1, y=UMAP_2, label=group))
+      p <- p + ggplot2::geom_text(data = centroids, mapping = aes(x=UMAP_1, y=UMAP_2, label=group))
     } else {
       embeddings$split <- seurat@meta.data[, split.by]
       centroids <- aggregate(cbind(UMAP_1,UMAP_2) ~ group + split, data= embeddings, FUN=mean)
       for(i in 1:length(splits)){
-        p[[i]] <- p[[i]] + geom_text(data = centroids[centroids$split == splits[i],], mapping = aes(x=UMAP_1, y=UMAP_2, label=group))
+        p[[i]] <- p[[i]] + ggplot2::geom_text(data = centroids[centroids$split == splits[i],], mapping = aes(x=UMAP_1, y=UMAP_2, label=group))
       }
     }
   }
